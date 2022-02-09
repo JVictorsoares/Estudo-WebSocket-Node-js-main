@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Web Socket</title>
+</head>
+<body>
+
+    <input id="nome" type="text"></input>
+    <br>
+    <br>
+    <textarea id="message" cols="30" rows="5" onkeypress="sendMessage()"></textarea>
+    <div id="messages" style="white-space: pre-line;"></div>
+
+    <script src="https://cdn.socket.io/socket.io-3.0.5.js"></script>
+    <script>
+        let socket = io("http://localhost:3000")
+        socket.on("server_resp", receiveMessage)
+
+        window.addEventListener("keydown", sendMessage)
+
+        function sendMessage(key){
+            if(event.keyCode === 13 && !key.shiftKey){
+                var name = document.getElementById("nome").value
+                var text = document.getElementById("message").value
+
+                document.getElementById("message").value = ""       
+
+                socket.emit("client_hello", {name, text})
+            }
+        }
+        function receiveMessage(data){
+        let elements = document.getElementById("messages")
+        elements.innerHTML+=`
+        <div>
+            <b>${data.name} says: </b> ${data.text}
+        </div>`
+        }
+    </script>
+
+
+</body>
+</html>
